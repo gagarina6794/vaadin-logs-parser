@@ -87,9 +87,27 @@ public class MainView extends VerticalLayout {
 
                             String info1 = sb.get().toString().trim();
                             if (!info1.isEmpty()) {
-                                LogItem previousLogItem = new LogItem("-", "-", "-", "-", info1);
-                                logsService.saveLog(previousLogItem);
-                                sb.set(new StringBuilder());
+                                try {
+                                    if (info1.contains("Start test") || info1.contains("Test finished")) {
+                                        String[] dateSplitter = info1.split("Step");
+                                        String date1 = dateSplitter[0].replace("[", "").replace("]", "").trim();
+                                        if (date1.length() > 15) {date1 = "";}
+                                        String[] locationSpliterator = info1.replace("*", "A").split("AAAAA");
+                                        String location1 = locationSpliterator[1].replace("Test finished:", "").replace("Start test:", "").trim();
+
+                                        LogItem previousLogItem = new LogItem("-", date1, "-", location1, info1);
+                                        logsService.saveLog(previousLogItem);
+                                        sb.set(new StringBuilder());
+                                    } else {
+                                        LogItem previousLogItem = new LogItem("-", "-", "-", "-", info1);
+                                        logsService.saveLog(previousLogItem);
+                                        sb.set(new StringBuilder());
+                                    }
+                                } catch (Exception ex) {
+                                    LogItem previousLogItem = new LogItem("-", "-", "-", "-", info1);
+                                    logsService.saveLog(previousLogItem);
+                                    sb.set(new StringBuilder());
+                                }
                             }
 
                             LogItem logItem = new LogItem(level, date, thread, path, info);
